@@ -150,16 +150,17 @@ class Config:
                 )
         
         # Validierung von Spracheinstellungen (CWE-20: Input Validation)
-        lang_pattern = re.compile(r'^[a-z]{2,3}$')
+        # Erlaubt BCP-47-Codes wie 'de', 'en', sowie 'pt-BR', 'zh-Hans' etc.
+        lang_pattern = re.compile(r'^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,4})?$')
         if not lang_pattern.match(self.out_target_lang):
             raise ValueError(
                 f"Ungültiger OUT_TARGET_LANG: '{self.out_target_lang}'. "
-                f"Erwartet Sprachcode wie 'en', 'de', 'fr' (2-3 Kleinbuchstaben)."
+                f"Erwartet BCP-47 Sprachcode wie 'en', 'de', 'pt-BR', 'zh-Hans'."
             )
         if not lang_pattern.match(self.in_target_lang):
             raise ValueError(
                 f"Ungültiger IN_TARGET_LANG: '{self.in_target_lang}'. "
-                f"Erwartet Sprachcode wie 'en', 'de', 'fr' (2-3 Kleinbuchstaben)."
+                f"Erwartet BCP-47 Sprachcode wie 'en', 'de', 'pt-BR', 'zh-Hans'."
             )
         
         # Validierung von Schwellenwerten (CWE-20: Input Validation)

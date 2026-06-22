@@ -59,9 +59,12 @@ class SensitiveDataFilter(logging.Filter):
                 )
         return True
 
-# Haupt-Logger für die Anwendung
+# Haupt-Logger für die Anwendung (Parent-Logger für die gesamte Hierarchie)
+parent_logger = logging.getLogger("VoiceTL")
+parent_logger.setLevel(logging.DEBUG)
+
+# Logger speziell für main.py (propagiert an VoiceTL)
 logger = logging.getLogger("VoiceTL.Main")
-logger.setLevel(logging.DEBUG)  # Alle Ebenen protokollieren
 
 # Datei-Handler mit Rotation (max 10MB, 5 Backups)
 file_handler = logging.handlers.RotatingFileHandler(
@@ -90,13 +93,13 @@ debug_handler.setFormatter(logging.Formatter(
 ))
 # Standardmäßig deaktiviert, kann bei Bedarf aktiviert werden
 
-# Handler dem Logger hinzufügen
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
+# Handler dem Parent-Logger hinzufügen, damit alle Sub-Logger geschützt sind
+parent_logger.addHandler(file_handler)
+parent_logger.addHandler(console_handler)
 
-# SensitiveDataFilter zu allen Handlern hinzufügen (CWE-532, OWASP A09:2025)
+# SensitiveDataFilter zu allen Handlern des Parent-Loggers hinzufügen (CWE-532, OWASP A09:2025)
 sensitive_filter = SensitiveDataFilter()
-for handler in logger.handlers:
+for handler in parent_logger.handlers:
     handler.addFilter(sensitive_filter)
 
 # debug_handler nur bei Bedarf aktivieren
